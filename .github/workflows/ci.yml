@@ -2,6 +2,7 @@ name: CI
 on: push
 env:
   UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  PROJECT_ROOT: .
 jobs:
   testAllModes:
     name: Test in ${{ matrix.testMode }} on version ${{ matrix.unityVersion }}
@@ -9,8 +10,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        projectPath:
-          - .
         unityVersion:
           - 2018.4.20f1
         testMode:
@@ -23,13 +22,13 @@ jobs:
 
       - uses: actions/cache@v1.1.0
         with:
-          path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}
+          path: ${{ env.PROJECT_ROOT }}/Library
+          key: Library-${{ env.PROJECT_ROOT }}
 
       - uses: webbertakken/unity-test-runner@v1.4
         id: tests
         with:
-          projectPath: ${{ matrix.projectPath }}
+          projectPath: ${{ env.PROJECT_ROOT }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: ${{ matrix.testMode }}
           artifactsPath: ${{ matrix.testMode }}-artifacts
@@ -38,3 +37,34 @@ jobs:
         with:
           name: Test results for ${{ matrix.testMode }}
           path: ${{ steps.tests.outputs.artifactsPath }}
+
+  createUnityPackage:
+    name: Create UnityPackage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - uses: actions/cache@v1.1.0
+        with:
+          path: ${{ env.PROJECT_ROOT }}/Library
+          key: Library-${{ env.PROJECT_ROOT }}
+
+      - name: Get Unity editor version
+        id: getUnityEditorVersion
+        uses: CumulusDS/get-yaml-paths-action@v0.1.0
+        with:
+          file: ${{ env.PROJECT_ROOT }}/ProjectSettings/ProjectVersion.txt
+          versionOutput: m_EditorVersion
+
+      - uses: webbertakken/unity-builder@v1.0
+        with:
+          unityVersion: ${{ steps.getUnityEditorVersion.outputs.versionOutput }}
+          projectPath: ${{ env.PROJECT_ROOT }}
+          buildMethod: Builder.Build
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Build.unitypackage
+          path: Build.unitypackage
