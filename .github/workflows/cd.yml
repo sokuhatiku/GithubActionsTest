@@ -24,7 +24,7 @@ jobs:
         id: getUnityEditorVersion
         uses: CumulusDS/get-yaml-paths-action@v0.1.0
         with:
-          file: ${{env.PROJECT_ROOT}}ProjectSettings/ProjectVersion.txt
+          file: ${{ env.PROJECT_ROOT }}/ProjectSettings/ProjectVersion.txt
           versionOutput: m_EditorVersion
 
       - uses: webbertakken/unity-builder@v1.0
