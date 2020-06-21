@@ -1,5 +1,9 @@
 name: Acquire activation file
-on: push
+on:
+  push:
+    paths: 
+      - 'ProjectSettings/ProjectVersion.txt'
+
 env:
   PROJECT_ROOT: ./
 jobs:
