@@ -1,4 +1,4 @@
-name: cd
+name: CD
 on: 
   push:
     branches:
@@ -31,9 +31,9 @@ jobs:
         with:
           unityVersion: ${{ steps.getUnityEditorVersion.outputs.versionOutput }}
           projectPath: ${{ env.PROJECT_ROOT }}
-          customParameters: "-exportPackage Assets/Scenes build.unitypackage"
+          buildMethod: Builder.Build
 
       - uses: actions/upload-artifact@v1
         with:
-          name: build.unitypackage
-          path: build.unitypackage
+          name: Build.unitypackage
+          path: Build.unitypackage
