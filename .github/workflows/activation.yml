@@ -1,5 +1,7 @@
 name: Acquire activation file
 on: push
+env:
+  PROJECT_ROOT: ./
 jobs:
   requestManualActivationFile:
     name: Request manual activation file
@@ -12,7 +14,7 @@ jobs:
         id: getUnityEditorVersion
         uses: CumulusDS/get-yaml-paths-action@v0.1.0
         with:
-          file: ProjectSettings/ProjectVersion.txt
+          file: ${{env.PROJECT_ROOT}}ProjectSettings/ProjectVersion.txt
           versionOutput: m_EditorVersion
 
       - name: Create manual activation file
