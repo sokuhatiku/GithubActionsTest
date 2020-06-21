@@ -1,0 +1,31 @@
+name: cd
+on: 
+  push:
+    branches:
+      - master
+env:
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  PROJECT_ROOT: .
+jobs:
+  createUnityPackage:
+    name: Create UnityPackage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - uses: actions/cache@v1.1.0
+        with:
+          path: ${{ env.PROJECT_ROOT }}/Library
+          key: Library-${{ env.PROJECT_ROOT }}
+
+      - uses: webbertakken/unity-builder@v1.0
+        with:
+          projectPath: ${{ env.PROJECT_ROOT }}
+          customParameters: "-exportPackage Assets/Scenes build.unitypackage"
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: build.unitypackage
+          path: build.unitypackage
